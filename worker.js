@@ -653,6 +653,32 @@ function renderCardManager(product, cards, user) {
            &larr; Back
         </a>
       </div>
+
+      <div class="rounded-xl border bg-card text-card-foreground shadow-sm mb-6">
+          <div class="flex flex-col space-y-1.5 p-6">
+              <h3 class="font-semibold leading-none tracking-tight">Quick Add Stock</h3>
+              <p class="text-sm text-muted-foreground">Insert the same key multiple times to build stock quickly.</p>
+          </div>
+          <div class="p-6 pt-0">
+              <form action="/admin/cards/duplicate" method="POST" class="grid gap-4 md:grid-cols-4">
+                  <input type="hidden" name="csrf_token" value="${user.csrf_token}">
+                  <input type="hidden" name="product_id" value="${product.id}">
+                  <div class="space-y-2 md:col-span-3">
+                      <label class="text-sm font-medium leading-none">Key Content</label>
+                      <input type="text" name="key" placeholder="Same content for each key" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring">
+                  </div>
+                  <div class="space-y-2">
+                      <label class="text-sm font-medium leading-none">Count</label>
+                      <input type="number" name="count" min="1" max="200" value="5" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring">
+                  </div>
+                  <div class="md:col-span-4">
+                      <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                          Add Duplicates
+                      </button>
+                  </div>
+              </form>
+          </div>
+      </div>
       
       <div class="grid gap-6 md:grid-cols-2">
          <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
@@ -951,6 +977,21 @@ export default {
                     }
                     return Response.redirect(`${url.origin}/admin/cards/list/${productId}`, 302);
                 }
+                if (path === '/admin/cards/duplicate' && request.method === 'POST') {
+                    const fd = await request.formData();
+                    if (fd.get('csrf_token') !== user.csrf_token) return new Response('CSRF Token Mismatch', { status: 403 });
+
+                    const productId = fd.get('product_id');
+                    const key = (fd.get('key') || '').toString().trim();
+                    const countRaw = parseInt(fd.get('count') || '1', 10);
+                    const count = Number.isFinite(countRaw) ? Math.min(Math.max(countRaw, 1), 200) : 1;
+
+                    if (key) {
+                        const stmt = env.DB.prepare('INSERT INTO cards (product_id, card_key) VALUES (?, ?)');
+                        await env.DB.batch(Array.from({ length: count }, () => stmt.bind(productId, key)));
+                    }
+                    return Response.redirect(`${url.origin}/admin/cards/list/${productId}`, 302);
+                }
                 // Delete Card
                 if (path.startsWith('/admin/cards/delete/') && request.method === 'POST') {
                     const fd = await request.formData();
@@ -1220,12 +1261,43 @@ async function handleAdminRefund(request, env) {
             },
             body: new URLSearchParams(params)
         });
+        const contentType = resp.headers.get('content-type') || '';
         const text = await resp.text();
         let result;
         try {
+            if (!contentType.includes('application/json')) {
+                throw new Error('non_json');
+            }
             result = JSON.parse(text);
         } catch (e) {
-            return new Response(`Refund API Error (Invalid JSON): ${text.substring(0, 500)}...`, { status: 502 });
+            const fallback = `<!DOCTYPE html><html class="h-full"><head>${getCommonHead('Refund')}</head>
+            <body class="flex min-h-full flex-col bg-background ny-body">
+              ${renderHeader(await getSession(request, env))}
+              <main class="flex-1 container py-10 max-w-2xl">
+                <div class="rounded-xl border bg-card text-card-foreground shadow-sm p-6 space-y-4">
+                  <div>
+                    <h2 class="text-2xl font-bold tracking-tight">Refund Action Needed</h2>
+                    <p class="text-sm text-muted-foreground mt-1">
+                      The refund API returned a browser challenge. Please open the refund page in a new tab to complete the refund.
+                    </p>
+                  </div>
+                  <form action="${CONFIG.REFUND_URL}" method="POST" target="_blank" class="space-y-3">
+                    <input type="hidden" name="pid" value="${CONFIG.MERCHANT_ID}">
+                    <input type="hidden" name="key" value="${CONFIG.MERCHANT_KEY}">
+                    <input type="hidden" name="trade_no" value="${order.trade_no}">
+                    <input type="hidden" name="money" value="${order.amount}">
+                    <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                      Open Refund Page
+                    </button>
+                  </form>
+                  <a href="/admin/orders" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                    Back to Orders
+                  </a>
+                </div>
+              </main>
+              ${renderFooter()}
+            </body></html>`;
+            return new Response(fallback, { headers: HTML_HEADER, status: 200 });
         }
 
         if (result.code === 1) {

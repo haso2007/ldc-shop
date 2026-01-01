@@ -1,110 +1,76 @@
 # LDC Store - Linux DO 积分商城
 
-基于 **Cloudflare Workers** + **D1 Database** 构建的 Serverless 虚拟商品自动发货系统。专为 Linux DO 生态设计，支持 **Linux DO Credit** 积分支付和 **Linux DO Connect** (OIDC) 登录。
+基于 **Cloudflare Workers** + **D1 Database** 的 Serverless 虚拟商品自动发货系统，面向 Linux DO 生态，支持 **Linux DO Credit** 积分支付与 **Linux DO Connect** 登录。
 
-## ✨ 特性
+## ✅ 特性
 
-- **Serverless 架构**：完全运行在 Cloudflare 边缘网络，低成本、高性能。
-- **自动发货**：支付成功后自动展示卡密/CDK，无需人工干预。
+- **Serverless 架构**：运行在 Cloudflare 边缘网络，低成本高性能。
+- **自动发货**：支付成功后自动展示卡密/CDK。
 - **Linux DO 深度集成**：
-    - 支持 **Linux DO Connect** (OIDC) 一键登录。
-    - 支持 **Linux DO Credit** (EasyPay 协议) 积分支付。
-- **管理后台**：内置完整的后台管理系统，支持商品管理、库存管理、补货、订单查询及**退款**功能。
-- **安全可靠**：无服务器维护烦恼，数据通过 Cloudflare D1 保障。
+  - **Linux DO Connect** (OIDC) 一键登录
+  - **Linux DO Credit** (EasyPay) 积分支付
+- **后台管理**：商品、库存、订单管理，支持退款操作。
+- **快速补货**：在库存页面可一键批量添加相同卡密。
+- **安全可靠**：数据存储在 Cloudflare D1。
 
 ## 🚀 部署指南
 
-### 1. 环境准备
-确保你已经安装了 Node.js 和 Wrangler (Cloudflare CLI)。
+### 1) 环境准备
+
 ```bash
 npm install -g wrangler
 wrangler login
 ```
 
-### 2. 初始化数据库 (Cloudflare D1)
-首先在 Cloudflare 创建一个 D1 数据库，建议命名为 `ldc-shop-db`。
-如果你还没有创建，可以使用命令：
+### 2) 初始化 D1 数据库
+
 ```bash
 wrangler d1 create ldc-shop-db
-```
-复制控制台输出的 `database_id`，替换项目根目录 `wrangler.toml` 文件中的 `database_id` 字段。
-
-然后初始化数据库表结构：
-```bash
 wrangler d1 execute ldc-shop-db --file=schema.sql
 ```
 
-### 3. 获取应用凭证 (关键步骤)
+如果是线上数据库：
+```bash
+wrangler d1 execute ldc-shop-db --remote --file=schema.sql
+```
 
-你需要分别申请 **支付接口** 和 **登录接口** 的凭证。假设你的部署域名是 `https://ldc.chatgpt.org.uk`（**请务必替换为你自己的实际域名**）。
+### 3) 配置 Secrets
 
-#### A. 支付接口凭证 (Merchant)
-前往 [Linux DO Credit Merchant](https://credit.linux.do/merchant) 创建应用，获取 **Client ID** 和 **Client Secret**。
-
-配置示例如下：
-
-| 字段 | 示例填写 (请替换你的域名) | 说明 |
-| :--- | :--- | :--- |
-| **应用地址** | `https://ldc.chatgpt.org.uk` | 商城首页地址 |
-| **回调 URI** | `https://ldc.chatgpt.org.uk/callback` | 用户支付后的前端跳转地址 |
-| **通知 URL** | `https://ldc.chatgpt.org.uk/notify` | 支付成功的异步通知地址 (Server-to-Server) |
-
-- 获取到的 `Client ID` 对应后配置的 `MERCHANT_ID`
-- 获取到的 `Client Secret` 对应后续配置的 `MERCHANT_KEY`
-
-#### B. 登录接口凭证 (OAuth)
-前往 [Linux DO Connect](https://connect.linux.do/dash/sso) 申请新接入，获取 **Client ID** 和 **Client Secret**。
-
-配置示例如下：
-
-| 字段 | 示例填写 (请替换你的域名) | 说明 |
-| :--- | :--- | :--- |
-| **应用主页** | `https://ldc.chatgpt.org.uk` | 商城首页地址 |
-| **应用描述** | `LDC STORE` | 应用名称，会显示在授权页 |
-| **回调地址** | `https://ldc.chatgpt.org.uk/authcallback` | OAuth 授权回调地址 |
-
-- 获取到的 `Client ID` 对应后续配置的 `OAUTH_CLIENT_ID`
-- 获取到的 `Client Secret` 对应后续配置的 `OAUTH_CLIENT_SECRET`
-
-### 4. 配置环境变量 (Secrets)
-为了安全起见，所有敏感信息都应通过 Cloudflare Secrets 存储，代码中不包含任何密钥。
-
-在项目根目录下运行以下命令（依次输入上一步获取的值）：
+你可以用脚本快速配置（已提供模板）：
 
 ```bash
-# === 支付配置 ===
-# 输入你在 credit.linux.do 获取的 Client ID
+powershell -ExecutionPolicy Bypass -File .\secrets.local.example.ps1
+```
+
+或手动设置：
+
+```bash
 wrangler secret put MERCHANT_ID
-
-# 输入你在 credit.linux.do 获取的 Client Secret
 wrangler secret put MERCHANT_KEY
-
-# === 登录配置 ===
-# 输入你在 connect.linux.do 获取的 Client ID
 wrangler secret put OAUTH_CLIENT_ID
-
-# 输入你在 connect.linux.do 获取的 Client Secret
 wrangler secret put OAUTH_CLIENT_SECRET
-
-# === 管理员配置 ===
-# 输入管理员的 Linux DO 用户名（多个用户用英文逗号分隔，如: user1,user2）
 wrangler secret put ADMIN_USERS
 ```
 
-### 5. 部署上线
+如果使用环境（如 `production`），命令后加 `--env production`。
+
+### 4) 部署
+
 ```bash
 wrangler deploy
 ```
-部署成功后，访问你的域名即可开始使用！
 
-## 🛠️ 管理员功能
-1. 部署完成后，访问网站。
-2. 点击右上角 "Login" 使用 Linux DO 账号登录。
-3. 如果你的用户名在 `ADMIN_USERS` 列表中，登录后导航栏会出现 "Admin" 菜单。
-4. 在后台你可以：
-    - **Products**: 创建商品、上传图片（支持外链）、设置价格。
-    - **Cards**: 为对应商品导入卡密/CDK库存（一行一个）。
-    - **Orders**: 查看所有订单流水，支持一键复制卡密和退款操作。
+## 🛠 后台管理
 
-## 📄 开源协议
+1. 访问站点并使用 Linux DO 登录。
+2. 你的用户名必须在 `ADMIN_USERS` 中，登录后导航栏会出现 **Admin**。
+3. 后台功能：
+   - **Products**：新建/编辑商品
+   - **Stock**：导入卡密、快速批量添加相同卡密
+   - **Orders**：查看订单、发起退款
+
+> 退款说明：如果退款接口返回浏览器挑战页面，系统会提示你在新标签页打开退款页面完成操作。
+
+## 📄 License
+
 MIT
