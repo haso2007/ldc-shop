@@ -21,7 +21,7 @@ const DEFAULT_CONFIG = {
 
     // Site Config
     SITE_NAME: 'LDC Virtual Goods Shop',
-    SITE_DESCRIPTION: 'High-quality virtual goods, instant delivery',
+    SITE_DESCRIPTION: 'Ring in the New Year with instant digital goodies and cheerful rewards',
     SITE_FOOTER_LINK: 'https://chatgpt.org.uk',
 
     // Currency
@@ -86,22 +86,186 @@ function getCommonHead(title) {
     <link rel="icon" href="${FAVICON_SVG}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-      :root { font-family: 'Inter', sans-serif; }
+      :root { font-family: 'Nunito', sans-serif; }
       @layer base {
         :root {
-          --background: 0 0% 100%; --foreground: 240 10% 3.9%;
-          --card: 0 0% 100%; --card-foreground: 240 10% 3.9%;
-          --popover: 0 0% 100%; --popover-foreground: 240 10% 3.9%;
-          --primary: 240 5.9% 10%; --primary-foreground: 0 0% 98%;
-          --secondary: 240 4.8% 95.9%; --secondary-foreground: 240 5.9% 10%;
-          --muted: 240 4.8% 95.9%; --muted-foreground: 240 3.8% 46.1%;
-          --accent: 240 4.8% 95.9%; --accent-foreground: 240 5.9% 10%;
-          --destructive: 0 84.2% 60.2%; --destructive-foreground: 0 0% 98%;
-          --border: 240 5.9% 90%; --input: 240 5.9% 90%; --ring: 240 10% 3.9%;
-          --radius: 0.5rem;
+          --background: 38 100% 97%; --foreground: 20 36% 16%;
+          --card: 0 0% 100%; --card-foreground: 18 35% 18%;
+          --popover: 0 0% 100%; --popover-foreground: 18 35% 18%;
+          --primary: 355 84% 58%; --primary-foreground: 0 0% 100%;
+          --secondary: 44 98% 82%; --secondary-foreground: 28 45% 22%;
+          --muted: 40 65% 94%; --muted-foreground: 22 20% 40%;
+          --accent: 160 58% 86%; --accent-foreground: 168 45% 24%;
+          --destructive: 0 78% 55%; --destructive-foreground: 0 0% 98%;
+          --border: 28 45% 86%; --input: 28 45% 86%; --ring: 12 86% 55%;
+          --radius: 1rem;
         }
+      }
+      body.ny-body {
+        font-family: 'Nunito', sans-serif;
+        background-color: hsl(var(--background));
+        background-image:
+          radial-gradient(circle at 12% 8%, rgba(255, 204, 102, 0.45), transparent 45%),
+          radial-gradient(circle at 88% 12%, rgba(255, 120, 120, 0.35), transparent 48%),
+          radial-gradient(circle at 18% 70%, rgba(120, 210, 170, 0.35), transparent 50%),
+          linear-gradient(160deg, #fff6e9 0%, #fff1f4 45%, #f4fff1 100%);
+        background-attachment: fixed;
+      }
+      body.ny-body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          radial-gradient(circle, rgba(255, 105, 97, 0.25) 0 3px, transparent 4px),
+          radial-gradient(circle, rgba(255, 206, 86, 0.25) 0 3px, transparent 4px),
+          radial-gradient(circle, rgba(76, 175, 80, 0.25) 0 3px, transparent 4px),
+          radial-gradient(circle, rgba(99, 102, 241, 0.2) 0 2px, transparent 3px);
+        background-size: 120px 120px, 160px 160px, 200px 200px, 180px 180px;
+        background-position: 20px 10px, 80px 40px, 10px 100px, 140px 60px;
+        opacity: 0.7;
+        animation: confetti-float 18s linear infinite;
+        pointer-events: none;
+        z-index: 0;
+      }
+      body.ny-body::after {
+        content: "";
+        position: fixed;
+        inset: -10% 0 0 0;
+        background-image:
+          radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.7), transparent 45%),
+          radial-gradient(circle at 80% 20%, rgba(255, 240, 200, 0.7), transparent 48%),
+          radial-gradient(circle at 70% 70%, rgba(255, 220, 220, 0.6), transparent 50%);
+        opacity: 0.45;
+        animation: firework-pulse 12s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 0;
+      }
+      body.ny-body > * { position: relative; z-index: 1; }
+      body.ny-body h1,
+      body.ny-body h2,
+      body.ny-body h3,
+      body.ny-body .ny-title {
+        font-family: 'Fredoka', 'Nunito', sans-serif;
+        letter-spacing: 0.02em;
+      }
+      body.ny-body .ny-header {
+        border-bottom-width: 2px;
+        box-shadow: 0 8px 0 rgba(0, 0, 0, 0.04);
+      }
+      body.ny-body .ny-hero {
+        border-radius: 1.75rem;
+        border: 2px dashed hsl(var(--border));
+        background: rgba(255, 255, 255, 0.82);
+        box-shadow: 0 14px 0 rgba(0, 0, 0, 0.05), 0 22px 32px rgba(0, 0, 0, 0.12);
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+      body.ny-body .ny-hero::before {
+        content: "";
+        position: absolute;
+        inset: -30% -10% auto -10%;
+        height: 170%;
+        background:
+          radial-gradient(circle at 12% 30%, rgba(255, 211, 102, 0.55), transparent 45%),
+          radial-gradient(circle at 85% 25%, rgba(255, 130, 130, 0.45), transparent 48%),
+          radial-gradient(circle at 60% 80%, rgba(120, 210, 170, 0.45), transparent 50%);
+        opacity: 0.7;
+        z-index: 0;
+      }
+      body.ny-body .ny-hero > * { position: relative; z-index: 1; }
+      body.ny-body .ny-kicker {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.4rem 1.1rem 0.4rem 1.2rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #ff4d4f, #ff8a4c);
+        color: #fff;
+        font-size: 0.72rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        font-weight: 700;
+        border: 2px solid rgba(255, 255, 255, 0.7);
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.14);
+      }
+      body.ny-body .ny-kicker::before {
+        content: "";
+        width: 0.42rem;
+        height: 0.42rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
+      }
+      body.ny-body .ny-kicker::after {
+        content: "";
+        position: absolute;
+        right: -0.7rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-left: 0.7rem solid #ff8a4c;
+        border-top: 0.45rem solid transparent;
+        border-bottom: 0.45rem solid transparent;
+        filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.1));
+      }
+      body.ny-body .ny-title {
+        text-shadow: 0 3px 0 rgba(255, 214, 102, 0.45);
+      }
+      body.ny-body .shadow-sm {
+        --tw-shadow: 0 10px 0 rgba(0, 0, 0, 0.06), 0 18px 24px rgba(0, 0, 0, 0.12);
+        --tw-shadow-colored: 0 10px 0 var(--tw-shadow-color), 0 18px 24px var(--tw-shadow-color);
+        box-shadow: var(--tw-shadow);
+        border-width: 2px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      body.ny-body .shadow-sm:hover {
+        --tw-shadow: 0 12px 0 rgba(0, 0, 0, 0.06), 0 22px 26px rgba(0, 0, 0, 0.14);
+        transform: translateY(-3px);
+      }
+      body.ny-body .ny-card:hover {
+        transform: translateY(-5px) rotate(-0.4deg);
+      }
+      body.ny-body .bg-primary {
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      body.ny-body .bg-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+      }
+      body.ny-body .bg-primary:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+      }
+      body.ny-body .ny-grid > * {
+        animation: ny-rise 0.6s ease-out both;
+      }
+      body.ny-body .ny-grid > *:nth-child(1) { animation-delay: 0.05s; }
+      body.ny-body .ny-grid > *:nth-child(2) { animation-delay: 0.1s; }
+      body.ny-body .ny-grid > *:nth-child(3) { animation-delay: 0.15s; }
+      body.ny-body .ny-grid > *:nth-child(4) { animation-delay: 0.2s; }
+      body.ny-body .ny-grid > *:nth-child(5) { animation-delay: 0.25s; }
+      body.ny-body .ny-grid > *:nth-child(6) { animation-delay: 0.3s; }
+      body.ny-body .ny-grid > *:nth-child(7) { animation-delay: 0.35s; }
+      body.ny-body .ny-grid > *:nth-child(8) { animation-delay: 0.4s; }
+      @keyframes ny-rise {
+        from { opacity: 0; transform: translateY(18px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes confetti-float {
+        0% { background-position: 20px 10px, 80px 40px, 10px 100px, 140px 60px; }
+        100% { background-position: 220px 180px, 280px 210px, 210px 240px, 340px 200px; }
+      }
+      @keyframes firework-pulse {
+        0%, 100% { opacity: 0.4; transform: scale(1); }
+        50% { opacity: 0.75; transform: scale(1.03); }
       }
       /* Custom scrollbar for better aesthetics */
       ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -150,7 +314,7 @@ function renderHeader(user = null) {
     const adminLink = (user && CONFIG.ADMIN_USERS.map(u => u.toLowerCase()).includes(user.username.toLowerCase()))
         ? `<a href="/admin" class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Admin</a>` : '';
 
-    return `<header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    return `<header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 ny-header">
         <div class="container flex h-16 items-center justify-between">
             <div class="flex items-center gap-6">
                 <a href="/" class="flex items-center space-x-2">
@@ -181,22 +345,17 @@ function renderFooter() {
 
 function renderHomePage(products, user = null) {
     return `<!DOCTYPE html><html class="h-full"><head>${getCommonHead(CONFIG.SITE_NAME)}</head>
-    <body class="flex min-h-full flex-col bg-background">
+    <body class="flex min-h-full flex-col bg-background ny-body">
       ${renderHeader(user)}
       <main class="flex-1">
         <div class="container py-8">
-            <section class="mx-auto flex max-w-[980px] flex-col items-center gap-2 py-8 md:py-12 md:pb-8 lg:py-24 lg:pb-20">
-                <h1 class="text-center text-3xl font-bold leading-tight tracking-tighter md:text-6xl lg:leading-[1.1]">
-                    Virtual Goods Shop
-                </h1>
-                <p class="max-w-[750px] text-center text-lg text-muted-foreground sm:text-xl">
-                    ${CONFIG.SITE_DESCRIPTION}
-                </p>
+            <section class="flex w-full items-start justify-start py-3 md:py-4">
+                <span class="ny-kicker">New Year Special</span>
             </section>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 ny-grid">
               ${products.map(p => `
-                <div class="rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md">
+                <div class="rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md ny-card">
                   <div class="p-6 flex flex-col items-center justify-center bg-muted/20 border-b aspect-[4/3]">
                       <img src="${p.image}" alt="${p.name}" class="h-24 w-24 object-contain drop-shadow-md">
                   </div>
@@ -231,7 +390,7 @@ function renderHomePage(products, user = null) {
 
 function renderBuyPage(product, user = null) {
     return `<!DOCTYPE html><html class="h-full"><head>${getCommonHead('Buy ' + product.name)}</head>
-    <body class="flex min-h-full flex-col bg-background">
+    <body class="flex min-h-full flex-col bg-background ny-body">
       ${renderHeader(user)}
       <main class="flex-1 container flex items-center justify-center py-12">
         <div class="rounded-xl border bg-card text-card-foreground shadow-sm w-full max-w-lg">
@@ -283,7 +442,7 @@ function renderOrderPage(order, showKey = false, user = null) {
     const statusIcon = order.status === 'delivered' ? '<i data-lucide="check-circle" class="w-12 h-12 text-green-600"></i>' : order.status === 'paid' ? '<i data-lucide="clock" class="w-12 h-12 text-orange-600"></i>' : '<i data-lucide="package" class="w-12 h-12 text-gray-400"></i>';
 
     return `<!DOCTYPE html><html class="h-full"><head>${getCommonHead('Order #' + order.order_id)}</head>
-    <body class="flex min-h-full flex-col bg-background">
+    <body class="flex min-h-full flex-col bg-background ny-body">
        ${renderHeader(user)}
        <main class="flex-1 container flex items-center justify-center py-12">
           <div class="rounded-xl border bg-card text-card-foreground shadow-sm w-full max-w-xl text-center p-8">
@@ -322,7 +481,7 @@ function renderOrderPage(order, showKey = false, user = null) {
 
 function renderAdminLogin() {
     return `<!DOCTYPE html><html class="h-full"><head>${getCommonHead('Admin Login')}</head>
-    <body class="flex min-h-full items-center justify-center bg-background">
+    <body class="flex min-h-full items-center justify-center bg-background ny-body">
       <div class="rounded-xl border bg-card text-card-foreground shadow-sm w-full max-w-sm">
         <div class="flex flex-col space-y-1.5 p-6">
             <h3 class="font-semibold tracking-tight text-2xl text-center">Admin Login</h3>
@@ -342,8 +501,8 @@ function renderAdminLogin() {
 
 function renderAdminLayout(content, activeTab, user) {
     return `<!DOCTYPE html><html class="h-full"><head>${getCommonHead('Admin Dashboard')}</head>
-    <body class="flex min-h-full flex-col bg-background">
-      <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+    <body class="flex min-h-full flex-col bg-background ny-body">
+      <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur ny-header">
          <div class="container flex h-14 items-center">
             <div class="mr-4 flex">
                <a href="/" class="mr-6 flex items-center space-x-2 font-bold hover:text-primary transition-colors">
@@ -579,11 +738,8 @@ function renderAdminOrders(orders, user) {
              <td class="p-4 align-middle hidden md:table-cell text-xs text-muted-foreground">${new Date(o.created_at).toLocaleString()}</td>
              <td class="p-4 align-middle">
                 ${(o.status === 'delivered' || o.status === 'paid') && o.trade_no ?
-            `<form action="${CONFIG.REFUND_URL}" method="POST" target="_blank" onsubmit="return confirm('Open refund page for ${o.amount} points?');">
-                   <input type="hidden" name="pid" value="${CONFIG.MERCHANT_ID}">
-                   <input type="hidden" name="key" value="${CONFIG.MERCHANT_KEY}">
-                   <input type="hidden" name="trade_no" value="${o.trade_no}">
-                   <input type="hidden" name="money" value="${o.amount}">
+            `<form action="/admin/order/refund/${o.order_id}" method="POST" onsubmit="return confirm('Refund ${o.amount} points for ${o.order_id}?');">
+                   <input type="hidden" name="csrf_token" value="${user.csrf_token}">
                    <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 text-xs">
                      Refund
                    </button>
@@ -819,7 +975,7 @@ export default {
 
 function renderQueryPage(orders = [], user = null) {
     return `<!DOCTYPE html><html class="h-full"><head>${getCommonHead('My Orders')}</head>
-    <body class="flex min-h-full flex-col bg-background">
+    <body class="flex min-h-full flex-col bg-background ny-body">
        ${renderHeader(user)}
        <main class="flex-1 container py-10 max-w-3xl">
           ${user ? (orders.length > 0 ? `
